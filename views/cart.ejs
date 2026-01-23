@@ -13,6 +13,20 @@
 <div class="container mt-4">
   <h2 class="mb-4">Shopping Cart</h2>
 
+  <!-- Flash Messages -->
+  <% if (flash && flash.error && flash.error.length > 0) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fas fa-exclamation-circle"></i> <%= flash.error[0] %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+  <% if (flash && flash.success && flash.success.length > 0) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="fas fa-check-circle"></i> <%= flash.success[0] %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
   <% if (!cart || !cart.items || cart.items.length === 0) { %>
     <div class="alert alert-info">
       <i class="fas fa-shopping-cart"></i> Your cart is empty.

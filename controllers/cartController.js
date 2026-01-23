@@ -13,6 +13,12 @@ exports.addToCart = async (req, res) => {
       return res.status(404).send("Saree not found");
     }
 
+    // Check if product is out of stock
+    if (saree.stock <= 0 || saree.stockStatus === "Out of Stock") {
+      req.flash("error", "This product is out of stock");
+      return res.redirect("/");
+    }
+
     let cart = await Cart.findOne({ user: req.user._id, status: "active" });
 
     if (!cart) {
@@ -23,6 +29,22 @@ exports.addToCart = async (req, res) => {
       item => item.saree.toString() === sareeId
     );
 
+    let currentQuantity = 0;
+    if (itemIndex > -1) {
+      currentQuantity = cart.items[itemIndex].quantity;
+    }
+
+    // Check if adding one more exceeds stock
+    if (currentQuantity + 1 > saree.stock) {
+      const remaining = saree.stock - currentQuantity;
+      if (remaining > 0) {
+        req.flash("error", `Only ${remaining} more item(s) available in stock`);
+      } else {
+        req.flash("error", `Maximum stock limit reached. Only ${saree.stock} items available`);
+      }
+      return res.redirect("/cart");
+    }
+
     if (itemIndex > -1) {
       cart.items[itemIndex].quantity += 1;
     } else {
@@ -30,6 +52,7 @@ exports.addToCart = async (req, res) => {
     }
 
     await cart.save();
+    req.flash("success", "Item added to cart");
     res.redirect("/cart");
   } catch (err) {
     console.error(err);
@@ -100,6 +123,27 @@ exports.updateQuantity = async (req, res) => {
     }
 
     if (action === "increase") {
+      // Get the product to check stock
+      const saree = await Saree.findById(sareeId);
+      
+      if (!saree) {
+        req.flash("error", "Product not found");
+        return res.redirect("/cart");
+      }
+
+      const currentQuantity = cart.items[itemIndex].quantity;
+      
+      // Check if increasing quantity exceeds stock
+      if (currentQuantity + 1 > saree.stock) {
+        const remaining = saree.stock - currentQuantity;
+        if (remaining > 0) {
+          req.flash("error", `Only ${remaining} more item(s) available in stock`);
+        } else {
+          req.flash("error", `Maximum stock limit reached. Only ${saree.stock} items in stock`);
+        }
+        return res.redirect("/cart");
+      }
+
       cart.items[itemIndex].quantity += 1;
     } else if (action === "decrease") {
       if (cart.items[itemIndex].quantity > 1) {
@@ -181,6 +225,18 @@ exports.placeOrder = async (req, res) => {
     });
 
     await order.save();
+
+    // Decrease stock for each product in the order
+    for (const item of cart.items) {
+      if (item.saree !== null) {
+        await Saree.findByIdAndUpdate(
+          item.saree._id,
+          {
+            $inc: { stock: -item.quantity }
+          }
+        );
+      }
+    }
 
     // Clear the cart after placing order
     await Cart.findByIdAndDelete(cart._id);

@@ -13,6 +13,20 @@
 <div class="container mt-4">
   <h3 class="mb-3">Latest Sarees</h3>
 
+  <!-- Flash Messages -->
+  <% if (flash && flash.error && flash.error.length > 0) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fas fa-exclamation-circle"></i> <%= flash.error[0] %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+  <% if (flash && flash.success && flash.success.length > 0) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="fas fa-check-circle"></i> <%= flash.success[0] %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
   <!-- Price Filter -->
   <form class="row mb-4" method="GET" action="/">
     <div class="col-md-4">
