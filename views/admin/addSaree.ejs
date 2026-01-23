@@ -1,0 +1,187 @@
+<%- include("../partials/header") %>
+
+<div class="container mt-4 mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-plus-circle"></i> Add New Saree</h2>
+    <a href="/admin/dashboard" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
+
+  <div class="card">
+    <div class="card-header bg-dark text-white">
+      <h5 class="mb-0">Product Information</h5>
+    </div>
+    <div class="card-body">
+      <form
+        action="/admin/add-saree"
+        method="POST"
+        enctype="multipart/form-data"
+      >
+        <!-- Product Name -->
+        <div class="mb-3">
+          <label for="title" class="form-label"
+            ><strong>Product Name</strong>
+            <span class="text-danger">*</span></label
+          >
+          <input
+            type="text"
+            id="title"
+            name="title"
+            placeholder="e.g., Banarasi Silk Saree, Kanjeevaram Wedding Saree"
+            class="form-control"
+            required
+          />
+          <div class="form-text">Main title shown to customers</div>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+          <label for="description" class="form-label"
+            ><strong>Product Description</strong>
+            <span class="text-danger">*</span></label
+          >
+          <textarea
+            id="description"
+            name="description"
+            rows="5"
+            placeholder="Elegant Kanjeevaram silk saree with traditional zari work.
+Length: 5.5 meters saree + 0.8 meters blouse piece.
+Suitable for weddings and festive occasions."
+            class="form-control"
+            required
+          ></textarea>
+          <div class="form-text">
+            Include fabric details, work/design, occasion, length & blouse info
+          </div>
+        </div>
+
+        <!-- Category -->
+        <div class="mb-3">
+          <label for="category" class="form-label"
+            ><strong>Category</strong> <span class="text-danger">*</span></label
+          >
+          <select id="category" name="category" class="form-select" required>
+            <option value="">-- Select Category --</option>
+            <option value="Silk Sarees">Silk Sarees</option>
+            <option value="Cotton Sarees">Cotton Sarees</option>
+            <option value="Banarasi Sarees">Banarasi Sarees</option>
+            <option value="Kanjeevaram Sarees">Kanjeevaram Sarees</option>
+            <option value="Party Wear Sarees">Party Wear Sarees</option>
+            <option value="Daily Wear Sarees">Daily Wear Sarees</option>
+            <option value="Festive Sarees">Festive Sarees</option>
+            <option value="Bridal Sarees">Bridal Sarees</option>
+            <option value="Designer Sarees">Designer Sarees</option>
+          </select>
+          <div class="form-text">Used for filtering and navigation</div>
+        </div>
+
+        <div class="row">
+          <!-- Price -->
+          <div class="col-md-4 mb-3">
+            <label for="price" class="form-label"
+              ><strong>Original Price (MRP)</strong>
+              <span class="text-danger">*</span></label
+            >
+            <div class="input-group">
+              <span class="input-group-text">₹</span>
+              <input
+                type="number"
+                id="price"
+                name="price"
+                placeholder="2499"
+                class="form-control"
+                min="0"
+                step="1"
+                required
+              />
+            </div>
+            <div class="form-text">Original price before discount</div>
+          </div>
+
+          <!-- Discount Percentage -->
+          <div class="col-md-4 mb-3">
+            <label for="discountPercent" class="form-label"
+              ><strong>Discount %</strong></label
+            >
+            <div class="input-group">
+              <input
+                type="number"
+                id="discountPercent"
+                name="discountPercent"
+                placeholder="0"
+                class="form-control"
+                min="0"
+                max="100"
+                step="1"
+                value="0"
+              />
+              <span class="input-group-text">%</span>
+            </div>
+            <div class="form-text">Leave 0 for no discount</div>
+          </div>
+
+          <!-- Stock Quantity -->
+          <div class="col-md-4 mb-3">
+            <label for="stock" class="form-label"
+              ><strong>Stock Quantity</strong>
+              <span class="text-danger">*</span></label
+            >
+            <input
+              type="number"
+              id="stock"
+              name="stock"
+              placeholder="10"
+              class="form-control"
+              min="0"
+              value="0"
+              required
+            />
+            <div class="form-text">Available quantity (0 = Out of Stock)</div>
+          </div>
+        </div>
+
+        <!-- Product Status -->
+        <div class="mb-3">
+          <label for="productStatus" class="form-label"
+            ><strong>Product Status</strong></label
+          >
+          <select id="productStatus" name="productStatus" class="form-select">
+            <option value="Active" selected>Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+          <div class="form-text">Active products are visible to customers</div>
+        </div>
+
+        <!-- Image Upload -->
+        <div class="mb-4">
+          <label for="image" class="form-label"
+            ><strong>Product Image</strong>
+            <span class="text-danger">*</span></label
+          >
+          <input
+            type="file"
+            id="image"
+            name="image"
+            class="form-control"
+            accept="image/*"
+            required
+          />
+          <div class="form-text">Upload saree image (JPG, PNG)</div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-dark btn-lg">
+            <i class="fas fa-save"></i> Add Saree to Inventory
+          </button>
+          <a href="/admin/dashboard" class="btn btn-outline-secondary"
+            >Cancel</a
+          >
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include("../partials/footer") %>

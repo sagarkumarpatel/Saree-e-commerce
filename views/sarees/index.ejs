@@ -1,0 +1,70 @@
+<%- include("../partials/header") %>
+
+<div class="container mt-4">
+
+  <!-- Price Filter -->
+  <form class="row mb-4" method="GET" action="/sarees">
+    <div class="col-md-4">
+      <select name="price" class="form-select">
+        <option value="">Filter by Price</option>
+        <option value="low">Below ₹1000</option>
+        <option value="mid">₹1000 - ₹3000</option>
+        <option value="high">Above ₹3000</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-dark">Apply</button>
+    </div>
+  </form>
+
+  <!-- Saree Grid -->
+  <div class="row" id="saree-container">
+    <% sarees.forEach(saree => { %>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <img src="<%= saree.image.url %>" class="card-img-top">
+          <div class="card-body">
+            <h5 class="card-title"><%= saree.title || saree.name %></h5>
+            <% if (saree.description) { %>
+              <p class="card-text text-muted small"><%= saree.description.substring(0, 100) %><%= saree.description.length > 100 ? '...' : '' %></p>
+            <% } %>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div>
+                <% if (saree.discountPercent > 0) { %>
+                  <% const calculatedFinalPrice = saree.finalPrice || (saree.price - (saree.price * saree.discountPercent / 100)); %>
+                  <span class="text-decoration-line-through text-muted me-2">₹<%= saree.price %></span>
+                  <span class="fw-bold text-success">₹<%= Math.round(calculatedFinalPrice) %></span>
+                <% } else { %>
+                  <span class="fw-bold">₹<%= saree.price %></span>
+                <% } %>
+              </div>
+              <div>
+                <% if (saree.discountPercent > 0) { %>
+                  <span class="badge bg-danger me-1"><%= saree.discountPercent %>% OFF</span>
+                <% } %>
+                <% if (saree.stockStatus === 'In Stock') { %>
+                  <span class="badge bg-success">In Stock</span>
+                <% } else { %>
+                  <span class="badge bg-secondary">Out of Stock</span>
+                <% } %>
+              </div>
+            </div>
+            <form action="/cart/add/<%= saree._id %>" method="POST" style="display: inline;">
+              <button type="submit" class="btn btn-outline-dark" <%= saree.stockStatus !== 'In Stock' ? 'disabled' : '' %>>Add to Cart</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <!-- Load More Button -->
+  <div class="text-center mt-4">
+    <button class="btn btn-dark" onclick="loadMore()">
+      <i class="fa-solid fa-arrow-right"></i> Load More
+    </button>
+  </div>
+
+</div>
+
+<%- include("../partials/footer") %>

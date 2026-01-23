@@ -1,0 +1,148 @@
+<%- include("../partials/header") %>
+
+<div class="container mt-4 mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-file-invoice"></i> Order Details</h2>
+    <a href="/admin/orders" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i> Back to Orders
+    </a>
+  </div>
+
+  <div class="row">
+    <!-- Left Column -->
+    <div class="col-md-8">
+      <!-- Customer Details -->
+      <div class="card mb-3">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0"><i class="fas fa-user"></i> Customer Details</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Name:</strong> <%= order.shippingDetails.fullName %></p>
+              <p><strong>Phone:</strong> <%= order.shippingDetails.mobileNumber %></p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Email:</strong> <%= order.user ? order.user.email : '-' %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivery Address -->
+      <div class="card mb-3">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Delivery Address</h5>
+        </div>
+        <div class="card-body">
+          <p class="mb-1"><%= order.shippingDetails.addressLine1 %></p>
+          <% if (order.shippingDetails.addressLine2) { %>
+            <p class="mb-1"><%= order.shippingDetails.addressLine2 %></p>
+          <% } %>
+          <p class="mb-1"><%= order.shippingDetails.city %>, <%= order.shippingDetails.state %></p>
+          <p class="mb-1"><strong>Pincode:</strong> <%= order.shippingDetails.pincode %></p>
+          <p class="mb-0"><strong>Country:</strong> <%= order.shippingDetails.country %></p>
+        </div>
+      </div>
+
+      <!-- Ordered Items -->
+      <div class="card mb-3">
+        <div class="card-header bg-dark text-white">
+          <h5 class="mb-0"><i class="fas fa-shopping-bag"></i> Ordered Items</h5>
+        </div>
+        <div class="card-body">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% order.products.forEach(item => { %>
+                <tr>
+                  <td>
+                    <% if (item.saree) { %>
+                      <%= item.saree.title || item.saree.name %>
+                    <% } else { %>
+                      Product not available
+                    <% } %>
+                  </td>
+                  <td>₹<%= item.price %></td>
+                  <td><%= item.quantity %></td>
+                  <td><strong>₹<%= item.price * item.quantity %></strong></td>
+                </tr>
+              <% }) %>
+              <tr class="table-active">
+                <td colspan="3" class="text-end"><strong>Total Amount:</strong></td>
+                <td><strong class="text-primary fs-5">₹<%= order.totalAmount %></strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-md-4">
+      <!-- Order Status Update -->
+      <div class="card mb-3">
+        <div class="card-header bg-warning text-dark">
+          <h5 class="mb-0"><i class="fas fa-sync"></i> Update Order Status</h5>
+        </div>
+        <div class="card-body">
+          <form action="/admin/orders/<%= order._id %>/update" method="POST">
+            <div class="mb-3">
+              <label for="status" class="form-label"><strong>Order Status:</strong></label>
+              <select class="form-select" id="status" name="status" required>
+                <option value="New" <%= order.status === 'New' ? 'selected' : '' %>>New</option>
+                <option value="Confirmed" <%= order.status === 'Confirmed' ? 'selected' : '' %>>Confirmed</option>
+                <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="adminNotes" class="form-label"><strong>Admin Notes:</strong></label>
+              <textarea class="form-control" id="adminNotes" name="adminNotes" rows="4" placeholder="Add notes about this order..."><%= order.adminNotes || '' %></textarea>
+              <div class="form-text">Optional notes for internal use</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="fas fa-save"></i> Update Order
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Order Info -->
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0"><i class="fas fa-info-circle"></i> Order Info</h5>
+        </div>
+        <div class="card-body">
+          <p><strong>Order ID:</strong><br>#<%= order._id.toString().slice(-6).toUpperCase() %></p>
+          <p><strong>Order Date:</strong><br><%= new Date(order.createdAt).toLocaleString('en-IN') %></p>
+          <p class="mb-0"><strong>Current Status:</strong><br>
+            <% if (order.status === 'New') { %>
+              <span class="badge bg-info"><%= order.status %></span>
+            <% } else if (order.status === 'Confirmed') { %>
+              <span class="badge bg-warning"><%= order.status %></span>
+            <% } else if (order.status === 'Shipped') { %>
+              <span class="badge" style="background-color: #6f42c1;"><%= order.status %></span>
+            <% } else if (order.status === 'Delivered') { %>
+              <span class="badge bg-success"><%= order.status %></span>
+            <% } else if (order.status === 'Cancelled') { %>
+              <span class="badge bg-danger"><%= order.status %></span>
+            <% } %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include("../partials/footer") %>

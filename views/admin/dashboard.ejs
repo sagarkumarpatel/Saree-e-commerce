@@ -1,0 +1,89 @@
+<%- include("../partials/header") %>
+
+<div class="container mt-4">
+  <h2 class="mb-4"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
+
+  <!-- Order Statistics Cards -->
+  <div class="row mb-4">
+    <div class="col-md-2">
+      <div class="card text-center bg-primary text-white">
+        <div class="card-body">
+          <h3><%= totalOrders %></h3>
+          <p class="mb-0">Total Orders</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="card text-center bg-info text-white">
+        <div class="card-body">
+          <h3><%= newOrders %></h3>
+          <p class="mb-0">New Orders</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="card text-center bg-warning text-white">
+        <div class="card-body">
+          <h3><%= confirmedOrders %></h3>
+          <p class="mb-0">Confirmed</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div
+        class="card text-center"
+        style="background-color: #6f42c1; color: white"
+      >
+        <div class="card-body">
+          <h3><%= shippedOrders %></h3>
+          <p class="mb-0">Shipped</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="card text-center bg-success text-white">
+        <div class="card-body">
+          <h3><%= deliveredOrders %></h3>
+          <p class="mb-0">Delivered</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="card text-center bg-danger text-white">
+        <div class="card-body">
+          <h3><%= cancelledOrders %></h3>
+          <p class="mb-0">Cancelled</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header bg-dark text-white">
+          <h5 class="mb-0"><i class="fas fa-tasks"></i> Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2 d-md-flex">
+            <a href="/admin/orders" class="btn btn-primary btn-lg">
+              <i class="fas fa-shopping-cart"></i> View All Orders
+            </a>
+            <a href="/admin/inventory" class="btn btn-secondary btn-lg">
+              <i class="fas fa-box"></i> View Inventory
+            </a>
+            <a href="/admin/add-saree" class="btn btn-dark btn-lg">
+              <i class="fas fa-plus"></i> Add New Saree
+            </a>
+            <a href="/admin/users" class="btn btn-info btn-lg">
+              <i class="fas fa-users"></i> User Order History
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include("../partials/footer") %>

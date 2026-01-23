@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Order Details - Saree Store</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<%- include("partials/navbar") %>
+
+<div class="container mt-4 mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-file-invoice"></i> Order Details</h2>
+    <a href="/my-orders" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i> Back to Orders
+    </a>
+  </div>
+
+  <div class="row">
+    <!-- Left Column -->
+    <div class="col-md-8">
+      <!-- Order Status Card -->
+      <div class="card mb-3">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0"><i class="fas fa-info-circle"></i> Order Status</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h6>Order #<%= order._id.toString().slice(-6).toUpperCase() %></h6>
+              <small class="text-muted">Placed on <%= new Date(order.createdAt).toLocaleString('en-IN') %></small>
+            </div>
+            <div>
+              <% if (order.status === 'New') { %>
+                <span class="badge bg-info fs-6"><%= order.status %></span>
+              <% } else if (order.status === 'Confirmed') { %>
+                <span class="badge bg-warning fs-6"><%= order.status %></span>
+              <% } else if (order.status === 'Shipped') { %>
+                <span class="badge fs-6" style="background-color: #6f42c1;"><%= order.status %></span>
+              <% } else if (order.status === 'Delivered') { %>
+                <span class="badge bg-success fs-6"><%= order.status %></span>
+              <% } else if (order.status === 'Cancelled') { %>
+                <span class="badge bg-danger fs-6"><%= order.status %></span>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Progress Timeline -->
+          <% if (order.status !== 'Cancelled') { %>
+            <div class="mt-4">
+              <div class="d-flex justify-content-between position-relative mb-4">
+                <!-- Progress Line -->
+                <div style="position: absolute; top: 15px; left: 5%; right: 5%; height: 3px; background: #e0e0e0; z-index: 0;"></div>
+                <% const activeWidth = order.status === 'New' ? '0%' : order.status === 'Confirmed' ? '33%' : order.status === 'Shipped' ? '66%' : '100%'; %>
+                <div style="position: absolute; top: 15px; left: 5%; width: <%= activeWidth %>; height: 3px; background: #0d6efd; z-index: 0;"></div>
+
+                <!-- New -->
+                <div class="text-center" style="flex: 1; position: relative; z-index: 1;">
+                  <div class="<%= ['New', 'Confirmed', 'Shipped', 'Delivered'].includes(order.status) ? 'bg-primary' : 'bg-secondary' %> rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 35px; height: 35px;">
+                    <i class="fas fa-clock text-white"></i>
+                  </div>
+                  <div><strong>Order Placed</strong></div>
+                  <small class="text-muted">New</small>
+                </div>
+
+                <!-- Confirmed -->
+                <div class="text-center" style="flex: 1; position: relative; z-index: 1;">
+                  <div class="<%= ['Confirmed', 'Shipped', 'Delivered'].includes(order.status) ? 'bg-warning' : 'bg-secondary' %> rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 35px; height: 35px;">
+                    <i class="fas fa-check text-white"></i>
+                  </div>
+                  <div><strong>Confirmed</strong></div>
+                  <small class="text-muted">Order confirmed</small>
+                </div>
+
+                <!-- Shipped -->
+                <div class="text-center" style="flex: 1; position: relative; z-index: 1;">
+                  <div class="<%= ['Shipped', 'Delivered'].includes(order.status) ? 'bg-primary' : 'bg-secondary' %> rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 35px; height: 35px;">
+                    <i class="fas fa-shipping-fast text-white"></i>
+                  </div>
+                  <div><strong>Shipped</strong></div>
+                  <small class="text-muted">Out for delivery</small>
+                </div>
+
+                <!-- Delivered -->
+                <div class="text-center" style="flex: 1; position: relative; z-index: 1;">
+                  <div class="<%= order.status === 'Delivered' ? 'bg-success' : 'bg-secondary' %> rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 35px; height: 35px;">
+                    <i class="fas fa-check-circle text-white"></i>
+                  </div>
+                  <div><strong>Delivered</strong></div>
+                  <small class="text-muted">Order received</small>
+                </div>
+              </div>
+            </div>
+          <% } else { %>
+            <div class="alert alert-danger">
+              <i class="fas fa-times-circle"></i> <strong>Order Cancelled</strong>
+              <p class="mb-0 mt-2">This order has been cancelled. If you have any questions, please contact support.</p>
+            </div>
+          <% } %>
+
+          <!-- Admin Message -->
+          <% if (order.adminNotes && order.adminNotes.trim() !== '') { %>
+            <div class="alert alert-info mt-3">
+              <strong><i class="fas fa-comment"></i> Message from Admin:</strong>
+              <p class="mb-0 mt-2"><%= order.adminNotes %></p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Ordered Items -->
+      <div class="card mb-3">
+        <div class="card-header bg-dark text-white">
+          <h5 class="mb-0"><i class="fas fa-shopping-bag"></i> Items Ordered</h5>
+        </div>
+        <div class="card-body">
+          <% order.products.forEach(item => { %>
+            <div class="row mb-3 pb-3 border-bottom">
+              <div class="col-md-2">
+                <% if (item.saree && item.saree.image) { %>
+                  <img src="<%= item.saree.image.url %>" class="img-fluid" style="border-radius: 5px;">
+                <% } %>
+              </div>
+              <div class="col-md-6">
+                <h6><%= item.saree ? (item.saree.title || item.saree.name) : 'Product' %></h6>
+                <p class="text-muted mb-0">Quantity: <%= item.quantity %></p>
+              </div>
+              <div class="col-md-4 text-end">
+                <p class="mb-0">₹<%= item.price %> × <%= item.quantity %></p>
+                <h6>₹<%= item.price * item.quantity %></h6>
+              </div>
+            </div>
+          <% }) %>
+          <div class="text-end mt-3">
+            <h4>Total: <strong class="text-primary">₹<%= order.totalAmount %></strong></h4>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-md-4">
+      <!-- Delivery Address -->
+      <div class="card mb-3">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Delivery Address</h5>
+        </div>
+        <div class="card-body">
+          <p class="mb-1"><strong><%= order.shippingDetails.fullName %></strong></p>
+          <p class="mb-1"><i class="fas fa-phone"></i> <%= order.shippingDetails.mobileNumber %></p>
+          <hr>
+          <p class="mb-1"><%= order.shippingDetails.addressLine1 %></p>
+          <% if (order.shippingDetails.addressLine2) { %>
+            <p class="mb-1"><%= order.shippingDetails.addressLine2 %></p>
+          <% } %>
+          <p class="mb-1"><%= order.shippingDetails.city %>, <%= order.shippingDetails.state %></p>
+          <p class="mb-1"><%= order.shippingDetails.pincode %></p>
+          <p class="mb-0"><%= order.shippingDetails.country %></p>
+        </div>
+      </div>
+
+      <!-- Payment Info -->
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0"><i class="fas fa-credit-card"></i> Payment</h5>
+        </div>
+        <div class="card-body">
+          <p class="mb-0"><strong>Payment Method:</strong> Cash on Delivery</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include("partials/footer") %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

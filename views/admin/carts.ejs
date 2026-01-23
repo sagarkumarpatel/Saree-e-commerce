@@ -1,0 +1,85 @@
+<%- include("../partials/header") %>
+
+<div class="container mt-4">
+  <h2>All User Carts</h2>
+  <a href="/admin/dashboard" class="btn btn-secondary mb-3">
+    <i class="fas fa-arrow-left"></i> Back to Dashboard
+  </a>
+
+  <% if (!carts || carts.length === 0) { %>
+    <div class="alert alert-info">
+      <i class="fas fa-info-circle"></i> No carts found.
+    </div>
+  <% } else { %>
+    <div class="accordion" id="cartsAccordion">
+      <% carts.forEach((cart, index) => { %>
+        <% if (cart.items && cart.items.length > 0) { %>
+          <div class="accordion-item mb-3">
+            <h2 class="accordion-header" id="heading<%= index %>">
+              <button class="accordion-button <%= index !== 0 ? 'collapsed' : '' %>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= index %>" aria-expanded="<%= index === 0 ? 'true' : 'false' %>" aria-controls="collapse<%= index %>">
+                <div class="w-100 d-flex justify-content-between pe-3 align-items-center">
+                  <span>
+                    <i class="fas fa-user"></i> 
+                    <%= cart.user ? cart.user.name : 'Unknown User' %> 
+                    (<%= cart.user ? cart.user.email : 'No email' %>)
+                  </span>
+                  <div>
+                    <span class="badge bg-primary me-2">
+                      <%= cart.items.length %> item<%= cart.items.length !== 1 ? 's' : '' %>
+                    </span>
+                    <form action="/admin/carts/delete/<%= cart._id %>" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to cancel this cart?');">
+                      <button type="submit" class="btn btn-sm btn-danger" onclick="event.stopPropagation();">
+                        <i class="fas fa-times"></i> Cancel Cart
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </button>
+            </h2>
+            <div id="collapse<%= index %>" class="accordion-collapse collapse <%= index === 0 ? 'show' : '' %>" aria-labelledby="heading<%= index %>" data-bs-parent="#cartsAccordion">
+              <div class="accordion-body">
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>Image</th>
+                        <th>Saree Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% let cartTotal = 0; %>
+                      <% cart.items.forEach(item => { %>
+                        <% if (item.saree) { %>
+                          <% const itemTotal = item.saree.price * item.quantity; %>
+                          <% cartTotal += itemTotal; %>
+                          <tr>
+                            <td>
+                              <img src="<%= item.saree.image.url %>" alt="<%= item.saree.title %>" style="width: 60px; height: 60px; object-fit: cover;">
+                            </td>
+                            <td><%= item.saree.title %></td>
+                            <td>₹<%= item.saree.price %></td>
+                            <td><%= item.quantity %></td>
+                            <td>₹<%= itemTotal %></td>
+                          </tr>
+                        <% } %>
+                      <% }) %>
+                      <tr class="table-active">
+                        <td colspan="4" class="text-end"><strong>Total:</strong></td>
+                        <td><strong>₹<%= cartTotal %></strong></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% } %>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<%- include("../partials/footer") %>

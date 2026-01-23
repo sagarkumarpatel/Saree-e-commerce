@@ -1,0 +1,6 @@
+🔗 Relationships Summary
+Relationship	Type
+User → Cart	    One-to-One
+User → Order	One-to-Many
+Admin → Saree	One-to-Many
+Order → Saree	Many-to-Many

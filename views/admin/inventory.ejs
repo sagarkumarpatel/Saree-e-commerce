@@ -1,0 +1,128 @@
+<%- include("../partials/header") %>
+
+<div class="container mt-4 mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-box"></i> Inventory Management</h2>
+    <div>
+      <a href="/admin/add-saree" class="btn btn-dark me-2">
+        <i class="fas fa-plus"></i> Add New Product
+      </a>
+      <a href="/admin/dashboard" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
+  </div>
+
+  <!-- Search Bar for Admin -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <form method="GET" action="/admin/inventory" class="row g-3">
+        <div class="col-md-10">
+          <input 
+            type="text" 
+            class="form-control" 
+            name="search" 
+            placeholder="Search products by name, description, or category..." 
+            value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
+          >
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-dark w-100">
+            <i class="fas fa-search"></i> Search
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <% if (!sarees || sarees.length === 0) { %>
+    <div class="alert alert-info">
+      <i class="fas fa-info-circle"></i> 
+      <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+        No products found for '<%= searchQuery %>'
+      <% } else { %>
+        No products in inventory.
+      <% } %>
+    </div>
+  <% } else { %>
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="table-dark">
+              <tr>
+                <th>Image</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% sarees.forEach(saree => { %>
+                <tr>
+                  <td>
+                    <img src="<%= saree.image.url %>" alt="<%= saree.title || saree.name %>" style="width: 60px; height: 60px; object-fit: cover;">
+                  </td>
+                  <td>
+                    <strong><%= saree.title || saree.name %></strong>
+                    <% if (saree.description) { %>
+                      <br><small class="text-muted"><%= saree.description.substring(0, 50) %>...</small>
+                    <% } %>
+                  </td>
+                  <td><%= saree.category || '-' %></td>
+                  <td>
+                    <% if (saree.discountPercent > 0) { %>
+                      <% const calculatedFinalPrice = saree.finalPrice || (saree.price - (saree.price * saree.discountPercent / 100)); %>
+                      <span class="text-decoration-line-through text-muted small">₹<%= saree.price %></span><br>
+                      <strong class="text-success">₹<%= Math.round(calculatedFinalPrice) %></strong>
+                      <span class="badge bg-danger"><%= saree.discountPercent %>% OFF</span>
+                    <% } else { %>
+                      <strong>₹<%= saree.price %></strong>
+                    <% } %>
+                  </td>
+                  <td>
+                    <% if (saree.stock !== undefined) { %>
+                      <span class="badge <%= saree.stock > 0 ? 'bg-info' : 'bg-danger' %>">
+                        <%= saree.stock %> units
+                      </span>
+                    <% } else { %>
+                      <span class="badge bg-secondary">N/A</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <% if (saree.stockStatus === 'Out of Stock') { %>
+                      <span class="badge bg-danger">Out of Stock</span>
+                    <% } else { %>
+                      <span class="badge bg-success">In Stock</span>
+                    <% } %>
+                    <br>
+                    <% if (saree.productStatus === 'Inactive') { %>
+                      <span class="badge bg-secondary mt-1">Inactive</span>
+                    <% } else { %>
+                      <span class="badge bg-primary mt-1">Active</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <a href="/admin/edit-saree/<%= saree._id %>" class="btn btn-sm btn-primary mb-1">
+                      <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <form action="/admin/delete-saree/<%= saree._id %>" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this product? This action cannot be undone.');">
+                      <button type="submit" class="btn btn-sm btn-danger">
+                        <i class="fas fa-trash"></i> Delete
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  <% } %>
+</div>
+
+<%- include("../partials/footer") %>

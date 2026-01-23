@@ -1,0 +1,47 @@
+<%- include("partials/header") %>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <h3 class="mb-3 text-center">Create Account</h3>
+          <% if (flash && flash.error && flash.error.length) { %>
+            <div class="alert alert-danger flash-msg"><%= flash.error[0] %></div>
+          <% } %>
+          <form action="/signup" method="POST">
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input type="text" name="name" class="form-control" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" name="email" class="form-control" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Password</label>
+              <input
+                type="password"
+                name="password"
+                class="form-control"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-dark w-100">Sign Up</button>
+          </form>
+          <p class="mt-3 text-center">
+            Already have an account? <a href="/login">Login</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include("partials/footer") %>
+
+<script>
+  setTimeout(() => {
+    document.querySelectorAll('.flash-msg').forEach(el => el.remove());
+  }, 5000);
+</script>
